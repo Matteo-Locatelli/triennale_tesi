@@ -1,0 +1,104 @@
+METODI DELLA CLASSE SATTest DA MODIFICARE 
+
+satTest.hasNextShape();
+
+satTest.setNextShape();
+
+int nextDepth = satTest.getCurrentDepth();	-> da TestSession
+
+Points points = satTest.getPoints(disWidthPix, (int) (disHeigthPix * heigthReduction));	
+		-> valori larghezza e altezza per ogni imageview (no schermo intero)
+		-> vettore di Points o 1 sola variabile usata 6 volte?
+			le dimensioni e l'immagine nella view sono le stesse, cambia solo la disparità
+
+
+/** return true if the test is not finished.
+*
+* @return true, if successful
+*/
+public boolean hasNextShape(){
+	return getCurrentStatus().currentResult ==  TestSession.Result.CONTINUE;		
+}
+->Sequenza: SATTest, TestSession, DepthCertBase, CertifierStatus
+Vettore di currentDepth in CertifierStatus e DepthCertbase
+Estrazione currentResult e deve essere "CONTINUE": lo verifico guardando i valori nel vettore
+SE test_non_finito (non trovo un risultato): CONTINUE 
+
+
+
+
+/** set the next shape and position and size if required 
+  * questo metodo è unico, ma andrà applicato ad ogni imageView */
+public void setNextShape(){
+	assert getCurrentStatus().currentResult == TestSession.Result.CONTINUE;
+	// position
+	if (changePosition) {	
+		int nextPosInt = rnd.nextInt(Position.values().length);
+		currentPos = Position.values()[nextPosInt];
+	} else {
+		currentPos = Position.CENTER;
+	}
+	// shape
+	currentShape = shapes.get(rnd.nextInt(shapes.size()));
+	// set the size
+	int nextSize = getCurrentPxSize();	->Inalterato
+	setShapeSize(nextSize);			->Inalterato
+	// change the background	
+	pointsData.reinit();			-> Questo per ogni image>View?
+	// change the color if in demo mode
+	// TODO put in extra method
+	if (indemomode){
+		if (colorShapeIntensity > maxColorShapeIntensity/2) {
+			colorShapeIntensity -= deltaColorShapeIntensity*2;
+		} else if (colorShapeIntensity > 0) {
+			colorShapeIntensity -= deltaColorShapeIntensity;
+		} else{
+			colorShapeIntensity = 0;
+			// exitsdemo mode
+			exitDemoMode();
+		}
+	}
+	// log some messages
+	logger.debug("shape " + currentShape + " position " + currentPos + " size in pxls [" + shape_width + " x " + shape_height + "]");
+}
+
+
+
+
+
+TestSession DA MODIFICARE
+
+-COSTRUTTORE
+
+-ChoiceResult deve riferirsi ad interi: in funzione della correttezza del test si ha una delle 4 risposte
+	-SE test corretto ESTRAI DISPARITà E CONTINUA/FINISCI
+	-SE test errato/skip RIFAI TEST CON ALTRE DISPARITà
+	-SE demo?
+
+
+//questo metodo valuterà fino a che disparità è stata vista
+public ChoiceResult solutionChosen(int choseDisparity, int[] currentDisparities, long timeTaken, double angle) {
+
+	// in input avrà un vettore di disparità e la disparità "scelta" invece delle shapes
+		ChoiceResult res;
+		if (chosenDisparity == 0) {	(valore corrispondente a skip)
+			dpcert.computeNextDepth(DepthCertBase.Solution.WRONG);
+			res = ChoiceResult.SKIP;
+		} else if (test corretto) {
+			dpcert.computeNextDepth(DepthCertBase.Solution.RIGHT);
+			res = ChoiceResult.RIGHT;
+		} else {
+			assert (test non corretto);
+			dpcert.computeNextDepth(DepthCertBase.Solution.WRONG);
+			res = ChoiceResult.WRONG;
+		}
+		// sessionStory.add(new SingleAnswer(chosenShape, currentShape, dpcert.getCurrentDepth(), angle, timeTaken));
+		return res;
+	}
+test corretto e test non corretto prenderanno in input la chosenDisparity e il vettore di disparità / immagini+checkbox
+
+ComputeNextDepth da DepthCertBase è ASTRATTO!
+Algoritmo per calcolare il vettore di disparità successivo già presente.
+
+Come fare per capire se la disparità scelta corrisponde ad una vista tra le 6 immagini?
+Uso un metodo che conta le checkbox di fila a true e confronta quel numero con la posizione della disparità vista.

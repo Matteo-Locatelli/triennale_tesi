@@ -1,0 +1,115 @@
+METODI PER CONTEGGIO
+
+
+//Metodo per verificare fino a che disparità in fila è stata vista l'immagine (obbligo sequenzialità)
+PER TUTTE LE CHECKBOX
+	SE la checkbox è selezionata
+		incrementa un contatore
+	ALTRIMENTI
+		break
+RETURN ultima posizione del vettore di cui si è vista l'immagine
+V-V-V-V-NV-NV -> return 4;		V-V-NV-V-NV-NV -> return 2;
+
+
+//Metodo per capire in che cella del vettore sta la disparità vista
+PER TUTTE LE DISPARITà NEL VETTORE
+	SE disparità vista <= disparità nella cella	// <= per via di celle con la stessa disparità
+		incrementa contatore
+	ALTRIMENTI
+		break
+RETURN posizione del vettore che contiene la disparità vista
+10-9-7-6-4-1 ^ 7 -> return 2;		7-7-7-7-6-6 ^ 7 -> return 3
+
+
+//Metodo di controllo per correttezza test
+SE contatore ultima cella con disparità vista == contatore checkbox	// 2 metodi sopra: risultato >= 1
+	TEST CORRETTO
+ALTRIMENTI	// o valori diversi o checkbox a 0
+	SE contatore checkbox==0	-> currDisparity=0 e contatore ultima cella vista=6;
+		SKIP
+		NUOVO TEST CON NUOVI max E min
+	ALTRIEMNTI	// valori diversi dai 2 metodi: casualità
+		TEST SCORRETTO
+		NUOVO TEST CON NUOVI max E min
+
+
+//Metodo per ottenere currDisparity (sarà la disparità dell'ultima immagine vista)
+currDisparity = 0;
+PER TUTTE LE CHECKBOX
+	SE checkbox è selezionata
+		currDisparity = disparità nella cella
+RETURN currDisparity	-> 0 di default, altrimenti un intero
+
+
+
+-Il primo metodo ritorna la posizione del vettore (+1) in funzione di quante checkbox di fila sono state selezionate
+-Il secondo metodo ritorna la posizione del vettore (+1) in funzione dell'ultima cella che ha come valore currDisparity
+-Il terzo metodo valuta la correttezza del test in funzione di questi 2 valori
+-Il quarto metodo ottiene la currDisparity in funzione dell'ultima checkbox selezionata (immagine vista)
+
+1) Si selezionano le checkbox e si ottiene currDisparity con il quarto metodo
+2) Si valutano le checkbox selezionate in fila con il primo metodo
+3) Si valuta l'ultima cella in cui l'immagine ha currDisparity come valore con il secondo metodo
+4) con il quarto metodo si valuta la non casualità del test:
+	-caso SKIP: si ha per currDisparity=0, contatore checkBox=0, contatore disparità=6
+		-> contatori diversi -> ripetere il test
+			-> nuovo min = vecchio max , max = max default
+	-caso WRONG: si ha per currDisparity!=0, contatori diversi
+		-> contatori diversi -> ripetere il test
+			-> nuovo min = vecchio max , max = max default
+	-caso RIGHT: si ha per currDisparity!=0, contatori uguali
+		-> contatori uguali -> continuare o finire il test
+			-continuare: nuovo min e nuovo max calcolati con algoritmo
+			-finire: riportare il risultato
+5) Valutato l'andamento del test considero a che valori settare i seguenti enum
+	-ChoiceResult (da TestSession) che diventerà TestResult
+	-Result (da TestSession)
+	-Solution (da DepthCertBase): si valuta già l'andamento del test con TestResult, ma lo uso comunque per
+					computare il nextArray di depths.
+	-CertifierStatus (da DepthCertBase): currentDepth, TestSession.Result
+
+	-SKIP:	TestResult = SKIP
+		RESULT = CONTINUE
+		SOLUTION = WRONG
+		currentDepth = 0 (default)
+	-> ripetere test con nuovi min e max calcolati con algoritmo
+
+	-WRONG:	TestResult = WRONG
+		RESULT = CONTINUE
+		SOLUTION = WRONG
+		currentDepth != 0, ma test errato (contatori diversi)
+	-> ripetere test con nuovi min e max calcolati con algoritmo
+
+	-RIGHT:	TestResult = RIGHT
+		SOLUTION = RIGHT
+		currentDepth != 0 e test corretto (contatori uguali)
+		RESULT: 2 possibili valori in funzione dell'algoritmo proveVettore
+			-CONTINUE (se non si è arrivati ad un risultato)
+				->nuovo test con nuovi min e max calcolati
+			-FINISH (se si è trovato un valore di disparità)
+				-> terminare il test
+
+
+
+Questi 2 metodi dovrebbero essere superflui
+
+//Metodo che calcola quante celle con currDisparity ci sono
+PER TUTTE LE DISPARITà
+	SE currDisparity == disparità nella cella
+		INCREMENTA CONTATORE
+	ALTRIMENTI
+		NULLA
+
+
+//Metodo per verificare che tutte le celle a stessa disparità siano state viste
+PER TUTTE LE IMMAGINI
+	SE disparità immagine == currDisparity
+		SE checkbox è selezionata
+			INCREMENTA CONTATORE
+		ALTRIMENTI
+			NULLA
+
+SE numero immagini a stessa disparità vista == caselle con stessa disparità
+	TEST CORRETTO
+ALTRIMENTI
+	TEST SCORRETTO

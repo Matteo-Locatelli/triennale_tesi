@@ -1,0 +1,70 @@
+DESCRIZIONE DEL FILE "proveVettore" RELATIVO AL CALCOLO DEI VALORI DI DISPARITà IN UN VETTORE DI DIMENSIONE 6.
+
+-setDisparities(min, max): questo metodo calcola le 6 disparità e restituisce il vettore in funzione dei valori
+	di min e max passati come parametro (possibilità di più celle contenenti lo stesso valore).
+
+A questo punto il test ha inizio e si selezionano un certo numero di caselle in funzione delle immagini
+che si riescono a vedere: questo determina il valore di "currDisparity".
+
+-getMinDisparity(): questo metodo restituisce il valore più grande di disparità non visto.
+	Se tutte le disparità sono viste ritorna il minimo di default (1).
+	
+-getMaxDisparity(): questo metodo restituisce il più piccolo valore di disparità visto.
+	Se nessuna disparità è vista ritorna il massimo di default (10).
+
+-showDisparities(): metodo di debug per mostrare le disparità calcolate.
+
+-checkCasuality(): metodo che calcola quante celle con la stessa disparità vista ci sono nel vettore.
+	In questa applicazione viene chiesto con un input, ma su android studio si andrà a lavorare sulle 
+	immagini toccate / sulle checkbox cliccate.
+
+-continueTest(): calcolate "currDisparity", "min" e "max" si valutano i possibili casi:
+	-se min=max si va al risultato.
+		Questo può succedere quando:
+			-nessuna disparità è vista in un vettore
+			-vengono viste tutte le immagini del primo vettore
+	-se min=max-1 si calcola un nuovo vettore di disparità e si valutano diverse possibilità inserendo 
+	 numChecked (corrisponde a quante disparità sono viste nel nuovo vettore):
+		-se 4: allora il risultato è il nuovo massimo
+		-se 6: -vengono viste tutte le disparità nel vettore e si effettua un nuovo test 
+			(min=1 e max=min precedente)
+		-altrimenti (nessuna immagine vista o cliccato a caso): si ripete il test con 
+			min=max+1 e max=massimo di default
+	-altrimenti si calcolano nuovi minimo e massimo e si ripete il test.
+		Questo accade quando:
+			-la differenza tra min e max è maggiore di 1
+
+->Il test termina subito se vengono viste tutte o nessuna disaprità (1 o 10), mentre continua finchè non viene
+trovato un vettore di disparità le cui celle sono riempite con 2 soli numeri interi: 4 di queste celle saranno
+riempite con un massimo e le altre 2 von un minimo inferiore di 1 rispetto al massimo.
+Quando vengono viste solo 4 caselle il test termina e porta al risultato.
+4 deriva dal metodo Math.Round. CONTROLLARE CHE SU ANDROID STUDIO NON SIA 3
+
+Nell'applicazione servirà controllare che le immagini siano cliccate in sequenza, ovvero non si potrà selezionare
+la prima e l'ultima immagine, ma se si seleziona una delle 6 immagini, tutte quelle prima di questa devono essere 
+selezionate, altrimenti vuol dire che il test è stato fatto a caso.
+La sequenzialità deriva dal fatto che nel vettore i valori sono in ordine decrescente.
+->METODO CHE CONTROLLA LA CORRETTEZZA DEL TEST
+
+Si potrebbe fare tramite un vettore booleano in cui se la checkbox/immagine è cliccata la cella corrispondente
+viene messa a true (false altrimenti) e bisognerà controllare che non ci siano celle false tra la prima e 
+l'ultima cella messe a true.
+Es: un ciclo che si interrompe al primo false e restituisce un intero indicante quanti true di fila ci sono.
+    Calcolo i true di fila nel vettore e confronto quel numero con la posizione dell'ultima immagine/checkbox 
+    selezionata (saranno anch'esse messe in un vettore):
+	-se uguali il test è stato fatto correttamente
+	-se diversi si dovrà ripetere il test con un nuovo vettore di disaprità 
+	 (massimo di default e minimo=massimo precedente).
+
+Osservazioni:
+-In questo programma si usano degli input, ma nell'applicazione si dovranno valutare quale immagini/checkbox sono
+	selezionate 
+-Un'alternativa per finire il test è quella di mostrare 6 immagini con la stessa disparità e, se viste tutte, si 
+	termina il test, altrimenti si calcola un nuovo vettore con min=max precedente e max=massimo di default.
+
+Per android studio: si può usare il metodo setOnTouchListener per le immagini al posto di usare le checkBox, ma 
+serve qualcosa che indica che l'immagine è stata cliccata o meno e bisogna dare anche la possibilità di deselezionare
+una scelta una volta cliccata l'immagine.
+Non si possono modificare i bordi dinamicamente.
+Non ha senso modificare l'immagine in un imageView a seconda del fatto che sia stata cliccata o meno.
+->La soluzione più comoda è usare una checkBox per ogni immagine. 

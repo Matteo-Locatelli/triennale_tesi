@@ -1,0 +1,47 @@
+NUOVO COSTRUTTORE PER TestSession
+
+public TestSession(int currentDepth, int [] depths, Class<? extends DepthCertBase> certifierCLass) {
+		if (certifierCLass == ArrayDepthCertifier.class)
+			dpcert = new ArrayDepthCertifier(currentDepth, depths);
+		else
+			throw new RuntimeException("unkown certifier!!! " + certifierCLass);
+	}
+
+
+NUOVA CLASSE ArrayDepthCertifier
+
+public class ArrayDepthCertifier extends DepthCertBase {
+	
+	
+	private int[] depths;
+	private minDepth;
+	private maxDepth;
+	
+	
+	public ArrayDepthCertifier (int[] initDepths) {
+		certifierStatus = new CertifierStatus();
+
+		if (initDepth[0] >= 1)	// valore iniziale del vettore = MAX_DISPARITY inserito nell'applicazione
+			certifierStatus.currentDepths = initDepths;	// modificare in DepthCertBase da intero a vettore
+		else
+			throw new IllegalArgumentException();
+		
+		maxDepth = // caricata da sharedPreferences
+		minDepth = 1;
+
+		certifierStatus.currentResult = CONTINUE;
+	}
+	
+	@Override
+	public void computeNextDepth(DepthCertBase.Solution solution) {
+		// metodo per calcolare il vettore successivo già presente in "proveVettore"
+		// da aggiungere i metodi in "conteggio" per verificare la correttezza del test
+	}
+		
+	
+	@Override
+	public CertifierStatus getCurrentStatus() {
+		return certifierStatus;
+	}	
+	
+}

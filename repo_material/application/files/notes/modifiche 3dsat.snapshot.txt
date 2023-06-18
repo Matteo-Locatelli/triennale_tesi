@@ -1,0 +1,53 @@
+MODIFICHE ALLA LIBRERIA 3dsat.snapshot USANDO UN VETTORE DI DISPARITà AL POSTO DI UN INTERO.
+
+Nell'applicazione non si lavorerà sulla scelta di 1 tra 4 shapes, ma su un vettore di disparità e su un intero 
+corrispondente al valore di disparità visto dall'utente.
+
+-PARTE RELATIVA ALL'ACQUISIZIONE DELLE DIMENSIONI DELLE VARIE IMAGEVIEWS
+	Per ogni imageView uso "LayoutParams" per prelevare altezza e larghezza all'interno del display.
+	Fatto questo si creano 6 monitorData con le dimensioni delle 6 imageViews.
+	
+-PARTE RELATIVA ALLE SHAPES (DIMENSIONAMENTO, CREAZIONE LIST,...)
+	Questa parte è identica per ogni imageView: definizione shapeSize, shapes e List<ImageShape> in funzione 
+	dell'imageSet scelto.
+
+-CREAZIONE 1 SATTestConfiguration 
+	sostituisco: 	"initialDepth" con un vettore di 6 disparità (quello iniziale è 10-9-7-6-4-1).
+			"monitorData" con un vettore di 6 monitorData
+	Il resto è identico.
+
+-CREAZIONE 1 SATTest A PARTIRE DA SATTestConfiguration
+	Nella classe SATTest ci sono:
+	-un valore di monitorData corrispondente al display dello schermo che verrà usato per calcolare l'angolo di 
+		stereoacuity (oppure 6 monitorData identici?)
+	-i metodi relativi alle shapes, alla demo mode e all' angolo di stereoacuity restano inalterati.
+		Bisogna però valutare alcuni metodi (es: getPoints, centerShape, setShapeSize) che prendono in input 
+		larghezza ed altezza e ritornano i punti in quell'area in cui applicare i comandi e andrebbero fatti 
+		per ogni imageView.
+	-hasNextShape: da modificare il corpo del metodo se il test non è finito.
+		Se il test non è finito ritorna true.
+	-setNextShape: da applicare ad ognuna delle 6 immagini.
+		Scelta la nuova shape bisognerà riportarla sulle 6 immagini.
+	-metodi relativi a "solution" da modificare: si valuteranno quali immagini/checkbox saranno selezionate.
+
+-MODIFICHE DA APPORTARE A TESTSESSION
+	-modificare il costruttore e metodi relativi a disparità per adattarli ad un vettore di depth
+	-in SingleAnswer la risposta dovrà essere un intero (valore di disparità visto o 0 se il test non va a buon
+	 fine per casualità, immagini non viste,...)
+	-modifiche a "solutionChosen" per lavorare con un intero e non con le shapes
+
+-MODIFICHE NELLE CLASSI DEPTHCERTIFIER -> NUOVO COSTRUTTORE 
+	-in ognuna di queste classi l'algoritmo che calcolerà il vettore di disparità successivo sarà lo stesso
+	-dato il vettore bisogna fare in modo di capire quando continuare il test o finirlo
+		-si continua il test se ci sono più di 2 valori diversi di disparità nelle celle del vettore
+		-si termina il test se si trova un valore di disparità che certifica la riuscita del test
+ 
+-MODIFICHE DepthCertBase
+	-Solution: serve per computare il next array di depths, ma farà riferimento alla correttezza del test,
+			non più alla correttezza dell'immagine vista.
+	-CertifierStatus:	currentDepth indica la depth trovata con gli algoritmi
+				(correttezza test e checkbox selezionate)
+				currentResult si riferisce all'andamento del test
+	
+	
+

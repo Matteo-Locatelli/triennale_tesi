@@ -1,0 +1,35 @@
+SINGIFICATO DELLE VARIABILI (NOMI UGUALI A QUELLE PRESENTI NELL'APPLICAZIONE)
+
+checkSequentiality controlla che la selezione delle checkbox sia fatta secondo un criterio di sequenzialità dei valori di disparità
+
+firstPhase analizza i valori presenti nel vettore e valuta in che momento del test ci si trova: se con valori tutti diversi o con 2/3 valori uguali di disparità
+
+countDisp e countZeros sono 2 variabili che contano rispettivamente il numero di disparità e di zeri cliccati (avendo fatto prima un controllo sulla sequenzialità le disparità cliccate seguono tale criterio)
+
+same è una variabile che conta quanti valori di disparità uguali ci sono nel vettore
+
+trio è l'equivalente di botchecked ma considera 3 valori uguali
+
+bothChecked è una variabile che valuta se sono state cliccate solo le checkbox corrispondenti ai 2 valori di disparità uguali
+
+1) massimo=absoluteMaxDisparity e minimo=valore mediano nel vettore
+
+2) nuovo test con nuovo massimo e nuovo minimo calcolati in funzione delle checkbox cliccate
+
+3) nuovo test con massimo=absoluteMaxDisparity e minimo = valore mediano del vettore
+
+4) fine test: certificato al valore di disparità corrispondente ai 2 valori uguali presenti nel vettore
+
+5) nuovo test nuovo massimo = minimo del vettore vecchio e nuovo minimo = 1
+
+6) fine test: certificato al valore di disparità al valore massimo messo in input all'inizio
+
+7) nuovo test nuovo massimo = AbsoluteMaxDisparity e nuovo minimo = valore corrispondente ai 2 valori uguali nel vettore
+
+8) fine test: disparità certificata 1
+
+9) nuovo test con tre 0 e tre 1 (aumento rights e diminuisco tries)
+
+10) nuovo test con tre 0 e tre 1 (aumento wrongs e diminuisco tries)
+
+11) nuovo test: massimo = absoluteMaxDisparity e minimo = 1
